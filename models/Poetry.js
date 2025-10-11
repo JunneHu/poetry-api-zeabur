@@ -67,11 +67,15 @@ class Poetry {
 
       // 添加排序和分页
       sql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
-      params.push(limit, offset);
+      params.push(parseInt(limit), parseInt(offset));
+
+      console.log('SQL查询:', sql);
+      console.log('查询参数:', params);
 
       const [rows] = await pool.execute(sql, params);
       return rows.map(row => new Poetry(row));
     } catch (error) {
+      console.error('数据库查询错误:', error);
       throw new Error(`获取诗句列表失败: ${error.message}`);
     }
   }
@@ -156,7 +160,7 @@ class Poetry {
         LIMIT ? OFFSET ?
       `;
       const searchTerm = `%${keyword}%`;
-      const [rows] = await pool.execute(sql, [keyword, searchTerm, searchTerm, limit, offset]);
+      const [rows] = await pool.execute(sql, [keyword, searchTerm, searchTerm, parseInt(limit), parseInt(offset)]);
       return rows.map(row => new Poetry(row));
     } catch (error) {
       throw new Error(`搜索诗句失败: ${error.message}`);

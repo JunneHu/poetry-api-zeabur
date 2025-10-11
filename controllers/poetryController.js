@@ -82,6 +82,9 @@ class PoetryController {
       if (ctx.query.title) filters.title = ctx.query.title;
       if (ctx.query.content) filters.content = ctx.query.content;
 
+      // 添加调试信息
+      console.log('查询参数:', { page, limit, filters });
+
       const [poetryList, total] = await Promise.all([
         Poetry.findAll(page, limit, filters),
         Poetry.count(filters)
@@ -100,10 +103,11 @@ class PoetryController {
         }
       };
     } catch (error) {
+      console.error('获取诗句列表错误:', error);
       ctx.status = 500;
       ctx.body = {
         success: false,
-        message: error.message
+        message: `获取诗句列表失败: ${error.message}`
       };
     }
   }
