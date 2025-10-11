@@ -1,0 +1,4 @@
+credential.http://10.0.0.43:30080.provider=generic
+user.email=1092622784@qq.com
+user.name=huyuxia
+credential.https://gitee.com.provider=generic
