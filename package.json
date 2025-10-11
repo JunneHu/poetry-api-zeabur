@@ -1,0 +1,30 @@
+{
+  "name": "poetry-api",
+  "version": "1.0.0",
+  "description": "诗句管理API系统",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["koa", "mysql", "swagger", "poetry", "api"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "koa": "^2.14.2",
+    "koa-router": "^12.0.0",
+    "koa-bodyparser": "^4.4.1",
+    "koa-cors": "^0.0.16",
+    "koa-static": "^5.0.0",
+    "mysql2": "^3.6.5",
+    "swagger-jsdoc": "^6.2.8",
+    "koa2-swagger-ui": "^5.12.0",
+    "joi": "^17.11.0",
+    "koa-joi-validate": "^0.5.1",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

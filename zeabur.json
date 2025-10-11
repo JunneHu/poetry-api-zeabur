@@ -1,0 +1,17 @@
+{
+  "name": "poetry-api",
+  "type": "web",
+  "framework": "nodejs",
+  "buildCommand": "npm ci --only=production",
+  "startCommand": "npm start",
+  "port": 3000,
+  "healthCheck": {
+    "path": "/health",
+    "interval": 30,
+    "timeout": 10,
+    "retries": 3
+  },
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
