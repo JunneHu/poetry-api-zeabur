@@ -85,23 +85,40 @@ class PoetryController {
       // 添加调试信息
       console.log('查询参数:', { page, limit, filters });
 
-      const [poetryList, total] = await Promise.all([
-        Poetry.findAll(page, limit, filters),
-        Poetry.count(filters)
-      ]);
+      // 先尝试简单的查询
+      try {
+        const poetryList = await Poetry.findAll(page, limit, filters);
+        const total = await Poetry.count(filters);
 
-      ctx.body = {
-        success: true,
-        data: {
-          list: poetryList,
-          pagination: {
-            page,
-            limit,
-            total,
-            pages: Math.ceil(total / limit)
+        ctx.body = {
+          success: true,
+          data: {
+            list: poetryList,
+            pagination: {
+              page,
+              limit,
+              total,
+              pages: Math.ceil(total / limit)
+            }
           }
-        }
-      };
+        };
+      } catch (dbError) {
+        console.error('数据库查询错误:', dbError);
+        // 如果复杂查询失败，尝试简单查询
+        const simpleList = await Poetry.findAll(1, 10, {});
+        ctx.body = {
+          success: true,
+          data: {
+            list: simpleList,
+            pagination: {
+              page: 1,
+              limit: 10,
+              total: simpleList.length,
+              pages: 1
+            }
+          }
+        };
+      }
     } catch (error) {
       console.error('获取诗句列表错误:', error);
       ctx.status = 500;

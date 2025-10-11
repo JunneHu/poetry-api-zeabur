@@ -22,7 +22,7 @@ class Poetry {
         INSERT INTO poetry (title, author, dynasty, content, translation, notes, tags)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
-      const [result] = await pool.execute(sql, [title, author, dynasty, content, translation, notes, tags]);
+      const [result] = await pool.query(sql, [title, author, dynasty, content, translation, notes, tags]);
       return result.insertId;
     } catch (error) {
       throw new Error(`创建诗句失败: ${error.message}`);
@@ -33,7 +33,7 @@ class Poetry {
   static async findById(id) {
     try {
       const sql = 'SELECT * FROM poetry WHERE id = ?';
-      const [rows] = await pool.execute(sql, [id]);
+      const [rows] = await pool.query(sql, [id]);
       return rows.length > 0 ? new Poetry(rows[0]) : null;
     } catch (error) {
       throw new Error(`获取诗句失败: ${error.message}`);
@@ -44,6 +44,16 @@ class Poetry {
   static async findAll(page = 1, limit = 10, filters = {}) {
     try {
       const offset = (page - 1) * limit;
+      
+      // 如果没有过滤条件，使用简单查询
+      if (Object.keys(filters).length === 0) {
+        const sql = `SELECT * FROM poetry ORDER BY created_at DESC LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}`;
+        console.log('简单SQL查询:', sql);
+        const [rows] = await pool.query(sql);
+        return rows.map(row => new Poetry(row));
+      }
+
+      // 有过滤条件时使用参数化查询
       let sql = 'SELECT * FROM poetry WHERE 1=1';
       const params = [];
 
@@ -65,14 +75,13 @@ class Poetry {
         params.push(`%${filters.content}%`);
       }
 
-      // 添加排序和分页
-      sql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
-      params.push(parseInt(limit), parseInt(offset));
+      // 添加排序和分页 - 使用字符串拼接避免参数问题
+      sql += ` ORDER BY created_at DESC LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}`;
 
-      console.log('SQL查询:', sql);
+      console.log('复杂SQL查询:', sql);
       console.log('查询参数:', params);
 
-      const [rows] = await pool.execute(sql, params);
+      const [rows] = await pool.query(sql, params);
       return rows.map(row => new Poetry(row));
     } catch (error) {
       console.error('数据库查询错误:', error);
@@ -83,6 +92,13 @@ class Poetry {
   // 获取总数
   static async count(filters = {}) {
     try {
+      // 如果没有过滤条件，使用简单查询
+      if (Object.keys(filters).length === 0) {
+        const sql = 'SELECT COUNT(*) as total FROM poetry';
+        const [rows] = await pool.query(sql);
+        return rows[0].total;
+      }
+
       let sql = 'SELECT COUNT(*) as total FROM poetry WHERE 1=1';
       const params = [];
 
@@ -103,7 +119,7 @@ class Poetry {
         params.push(`%${filters.content}%`);
       }
 
-      const [rows] = await pool.execute(sql, params);
+      const [rows] = await pool.query(sql, params);
       return rows[0].total;
     } catch (error) {
       throw new Error(`获取诗句总数失败: ${error.message}`);
@@ -129,7 +145,7 @@ class Poetry {
 
       values.push(id);
       const sql = `UPDATE poetry SET ${fields.join(', ')} WHERE id = ?`;
-      const [result] = await pool.execute(sql, values);
+      const [result] = await pool.query(sql, values);
       
       return result.affectedRows > 0;
     } catch (error) {
@@ -141,7 +157,7 @@ class Poetry {
   static async delete(id) {
     try {
       const sql = 'DELETE FROM poetry WHERE id = ?';
-      const [result] = await pool.execute(sql, [id]);
+      const [result] = await pool.query(sql, [id]);
       return result.affectedRows > 0;
     } catch (error) {
       throw new Error(`删除诗句失败: ${error.message}`);
@@ -157,10 +173,10 @@ class Poetry {
         WHERE MATCH(content) AGAINST(? IN NATURAL LANGUAGE MODE)
         OR title LIKE ? OR author LIKE ?
         ORDER BY created_at DESC
-        LIMIT ? OFFSET ?
+        LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}
       `;
       const searchTerm = `%${keyword}%`;
-      const [rows] = await pool.execute(sql, [keyword, searchTerm, searchTerm, parseInt(limit), parseInt(offset)]);
+      const [rows] = await pool.query(sql, [keyword, searchTerm, searchTerm]);
       return rows.map(row => new Poetry(row));
     } catch (error) {
       throw new Error(`搜索诗句失败: ${error.message}`);
@@ -171,7 +187,7 @@ class Poetry {
   static async getDynasties() {
     try {
       const sql = 'SELECT DISTINCT dynasty FROM poetry ORDER BY dynasty';
-      const [rows] = await pool.execute(sql);
+      const [rows] = await pool.query(sql);
       return rows.map(row => row.dynasty);
     } catch (error) {
       throw new Error(`获取朝代列表失败: ${error.message}`);
@@ -182,7 +198,7 @@ class Poetry {
   static async getAuthors() {
     try {
       const sql = 'SELECT DISTINCT author FROM poetry ORDER BY author';
-      const [rows] = await pool.execute(sql);
+      const [rows] = await pool.query(sql);
       return rows.map(row => row.author);
     } catch (error) {
       throw new Error(`获取作者列表失败: ${error.message}`);
