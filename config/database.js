@@ -3,11 +3,11 @@ require('dotenv').config({ path: './config.env' });
 
 // 数据库连接配置
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 3307,
+  host: process.env.DB_HOST || 'postgresql',
+  port: process.env.DB_PORT || 5432,
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '123456',
-  database: process.env.DB_NAME || 'poetry_db',
+  password: process.env.DB_PASSWORD || 'XNiQge5RLIq1T34Ph0Jc6StZx9Er827B',
+  database: process.env.DB_NAME || 'zeabur',
   charset: 'utf8mb4',
   timezone: '+08:00'
 };
