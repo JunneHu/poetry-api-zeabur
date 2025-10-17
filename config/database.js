@@ -5,7 +5,7 @@ require('dotenv').config({ path: './config.env' });
 const dbConfig = {
   host: process.env.DB_HOST || 'postgresql',
   port: process.env.DB_PORT || 5432,
-  user: process.env.DB_USER || 'root',
+  user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'XNiQge5RLIq1T34Ph0Jc6StZx9Er827B',
   database: process.env.DB_NAME || 'zeabur',
   charset: 'utf8mb4',
