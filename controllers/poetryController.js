@@ -94,12 +94,10 @@ class PoetryController {
           success: true,
           data: {
             list: poetryList,
-            pagination: {
-              page,
-              limit,
-              total,
-              pages: Math.ceil(total / limit)
-            }
+            page,
+            limit,
+            total,
+            pages: Math.ceil(total / limit)
           }
         };
       } catch (dbError) {
@@ -110,12 +108,10 @@ class PoetryController {
           success: true,
           data: {
             list: simpleList,
-            pagination: {
-              page: 1,
-              limit: 10,
-              total: simpleList.length,
-              pages: 1
-            }
+            page: 1,
+            limit: 10,
+            total: simpleList.length,
+            pages: 1
           }
         };
       }
@@ -229,12 +225,10 @@ class PoetryController {
         success: true,
         data: {
           list: poetryList,
-          pagination: {
-            page,
-            limit,
-            total,
-            pages: Math.ceil(total / limit)
-          }
+          page,
+          limit,
+          total,
+          pages: Math.ceil(total / limit)
         }
       };
     } catch (error) {
