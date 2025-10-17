@@ -269,7 +269,7 @@ router.get('/authors', PoetryController.getAuthors);
 
 /**
  * @swagger
- * /api/poetry/{id}:
+ * /api/poetry:
  *   get:
  *     summary: 获取诗句详情
  *     tags: [Poetry]
@@ -297,11 +297,11 @@ router.get('/authors', PoetryController.getAuthors);
  *       500:
  *         description: 服务器错误
  */
-router.get('/:id', PoetryController.getPoetryById);
+router.get('/getPoetryById', PoetryController.getPoetryById);
 
 /**
  * @swagger
- * /api/poetry/{id}:
+ * /api/poetry:
  *   put:
  *     summary: 更新诗句
  *     tags: [Poetry]
@@ -352,12 +352,12 @@ router.get('/:id', PoetryController.getPoetryById);
  *       500:
  *         description: 服务器错误
  */
-router.put('/:id', PoetryController.updatePoetry);
+router.post('/updatePoetry', PoetryController.updatePoetry);
 
 /**
  * @swagger
- * /api/poetry/{id}:
- *   delete:
+ * /api/poetry:
+ *   post:
  *     summary: 删除诗句
  *     tags: [Poetry]
  *     parameters:
@@ -379,6 +379,6 @@ router.put('/:id', PoetryController.updatePoetry);
  *       500:
  *         description: 服务器错误
  */
-router.delete('/:id', PoetryController.deletePoetry);
+router.post('/deletePoetry', PoetryController.deletePoetry);
 
 module.exports = router;

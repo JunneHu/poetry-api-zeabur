@@ -128,11 +128,10 @@ class PoetryController {
   // 更新诗句
   static async updatePoetry(ctx) {
     try {
-      const { id } = ctx.params;
       const updateData = ctx.request.body;
 
       // 检查诗句是否存在
-      const existingPoetry = await Poetry.findById(id);
+      const existingPoetry = await Poetry.findById(updateData.id);
       if (!existingPoetry) {
         ctx.status = 404;
         ctx.body = {
@@ -142,7 +141,7 @@ class PoetryController {
         return;
       }
 
-      const success = await Poetry.update(id, updateData);
+      const success = await Poetry.update(updateData.id, updateData);
       if (success) {
         ctx.body = {
           success: true,
@@ -167,7 +166,7 @@ class PoetryController {
   // 删除诗句
   static async deletePoetry(ctx) {
     try {
-      const { id } = ctx.params;
+      const { id } =ctx.request.body;
 
       // 检查诗句是否存在
       const existingPoetry = await Poetry.findById(id);
