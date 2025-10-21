@@ -6,10 +6,12 @@ class Poetry {
     this.title = data.title;
     this.author = data.author;
     this.dynasty = data.dynasty;
-    this.content = data.content;
+    // 将content字符串转换为数组（按换行符分割）
+    this.content = data.content ? data.content.split('\n').filter(line => line.trim()) : [];
     this.translation = data.translation;
     this.notes = data.notes;
-    this.tags = data.tags;
+    // 将tags字符串转换为数组（按逗号分割）
+    this.tags = data.tags ? data.tags.split(',').filter(tag => tag.trim()) : [];
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;
   }
@@ -18,11 +20,30 @@ class Poetry {
   static async create(poetryData) {
     try {
       const { title, author, dynasty, content, translation, notes, tags } = poetryData;
+      
+      // 处理content字段 - 如果是数组则转换为字符串
+      const processedContent = Array.isArray(content) ? content.join('\n') : content;
+      
+      // 处理tags字段 - 如果是数组则转换为逗号分隔的字符串
+      const processedTags = Array.isArray(tags) ? tags.join(',') : (tags || '');
+      
+      // 处理可选字段，确保不是undefined
+      const processedTranslation = translation || null;
+      const processedNotes = notes || null;
+      
       const sql = `
         INSERT INTO poetry (title, author, dynasty, content, translation, notes, tags)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
-      const [result] = await pool.query(sql, [title, author, dynasty, content, translation, notes, tags]);
+      const [result] = await pool.query(sql, [
+        title, 
+        author, 
+        dynasty, 
+        processedContent, 
+        processedTranslation, 
+        processedNotes, 
+        processedTags
+      ]);
       return result.insertId;
     } catch (error) {
       throw new Error(`创建诗句失败: ${error.message}`);
