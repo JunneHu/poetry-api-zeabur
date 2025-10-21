@@ -269,7 +269,7 @@ router.get('/authors', PoetryController.getAuthors);
 
 /**
  * @swagger
- * /api/poetry:
+ * /api/poetry/getPoetryById:
  *   get:
  *     summary: 获取诗句详情
  *     tags: [Poetry]
