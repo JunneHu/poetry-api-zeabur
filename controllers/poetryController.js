@@ -10,8 +10,9 @@ class PoetryController {
       if (!title || !author || !dynasty || !content) {
         ctx.status = 400;
         ctx.body = {
-          success: false,
-          message: '诗题、作者、朝代和内容为必填字段'
+          code: -1,
+          message: '诗题、作者、朝代和内容为必填字段',
+          data: null
         };
         return;
       }
@@ -28,15 +29,16 @@ class PoetryController {
 
       ctx.status = 201;
       ctx.body = {
-        success: true,
+        code: 0,
         message: '诗句创建成功',
         data: { id: poetryId }
       };
     } catch (error) {
       ctx.status = 500;
       ctx.body = {
-        success: false,
-        message: error.message
+        code: -1,
+        message: error.message,
+        data: null
       };
     }
   }
@@ -50,21 +52,24 @@ class PoetryController {
       if (!poetry) {
         ctx.status = 404;
         ctx.body = {
-          success: false,
-          message: '诗句不存在'
+          code: -1,
+          message: '诗句不存在',
+          data: null
         };
         return;
       }
 
       ctx.body = {
-        success: true,
+        code: 0,
+        message: '获取成功',
         data: poetry
       };
     } catch (error) {
       ctx.status = 500;
       ctx.body = {
-        success: false,
-        message: error.message
+        code: -1,
+        message: error.message,
+        data: null
       };
     }
   }
@@ -91,7 +96,8 @@ class PoetryController {
         const total = await Poetry.count(filters);
 
         ctx.body = {
-          success: true,
+          code: 0,
+          message: '获取成功',
           data: {
             list: poetryList,
             page,
@@ -105,7 +111,8 @@ class PoetryController {
         // 如果复杂查询失败，尝试简单查询
         const simpleList = await Poetry.findAll(1, 10, {});
         ctx.body = {
-          success: true,
+          code: 0,
+          message: '获取成功',
           data: {
             list: simpleList,
             page: 1,
@@ -119,8 +126,9 @@ class PoetryController {
       console.error('获取诗句列表错误:', error);
       ctx.status = 500;
       ctx.body = {
-        success: false,
-        message: `获取诗句列表失败: ${error.message}`
+        code: -1,
+        message: `获取诗句列表失败: ${error.message}`,
+        data: null
       };
     }
   }
@@ -135,8 +143,9 @@ class PoetryController {
       if (!existingPoetry) {
         ctx.status = 404;
         ctx.body = {
-          success: false,
-          message: '诗句不存在'
+          code: -1,
+          message: '诗句不存在',
+          data: null
         };
         return;
       }
@@ -144,21 +153,24 @@ class PoetryController {
       const success = await Poetry.update(updateData.id, updateData);
       if (success) {
         ctx.body = {
-          success: true,
-          message: '诗句更新成功'
+          code: 0,
+          message: '诗句更新成功',
+          data: null
         };
       } else {
         ctx.status = 400;
         ctx.body = {
-          success: false,
-          message: '诗句更新失败'
+          code: -1,
+          message: '诗句更新失败',
+          data: null
         };
       }
     } catch (error) {
       ctx.status = 500;
       ctx.body = {
-        success: false,
-        message: error.message
+        code: -1,
+        message: error.message,
+        data: null
       };
     }
   }
@@ -166,15 +178,16 @@ class PoetryController {
   // 删除诗句
   static async deletePoetry(ctx) {
     try {
-      const { id } =ctx.request.body;
+      const { id } = ctx.request.body;
 
       // 检查诗句是否存在
       const existingPoetry = await Poetry.findById(id);
       if (!existingPoetry) {
         ctx.status = 404;
         ctx.body = {
-          success: false,
-          message: '诗句不存在'
+          code: -1,
+          message: '诗句不存在',
+          data: null
         };
         return;
       }
@@ -182,21 +195,24 @@ class PoetryController {
       const success = await Poetry.delete(id);
       if (success) {
         ctx.body = {
-          success: true,
-          message: '诗句删除成功'
+          code: 0,
+          message: '诗句删除成功',
+          data: null
         };
       } else {
         ctx.status = 400;
         ctx.body = {
-          success: false,
-          message: '诗句删除失败'
+          code: -1,
+          message: '诗句删除失败',
+          data: null
         };
       }
     } catch (error) {
       ctx.status = 500;
       ctx.body = {
-        success: false,
-        message: error.message
+        code: -1,
+        message: error.message,
+        data: null
       };
     }
   }
@@ -211,8 +227,9 @@ class PoetryController {
       if (!keyword) {
         ctx.status = 400;
         ctx.body = {
-          success: false,
-          message: '搜索关键词不能为空'
+          code: -1,
+          message: '搜索关键词不能为空',
+          data: null
         };
         return;
       }
@@ -221,7 +238,8 @@ class PoetryController {
       const total = await Poetry.count({ content: keyword });
 
       ctx.body = {
-        success: true,
+        code: 0,
+        message: '搜索成功',
         data: {
           list: poetryList,
           page,
@@ -233,8 +251,9 @@ class PoetryController {
     } catch (error) {
       ctx.status = 500;
       ctx.body = {
-        success: false,
-        message: error.message
+        code: -1,
+        message: error.message,
+        data: null
       };
     }
   }
@@ -244,14 +263,16 @@ class PoetryController {
     try {
       const dynasties = await Poetry.getDynasties();
       ctx.body = {
-        success: true,
+        code: 0,
+        message: '获取成功',
         data: dynasties
       };
     } catch (error) {
       ctx.status = 500;
       ctx.body = {
-        success: false,
-        message: error.message
+        code: -1,
+        message: error.message,
+        data: null
       };
     }
   }
@@ -261,14 +282,16 @@ class PoetryController {
     try {
       const authors = await Poetry.getAuthors();
       ctx.body = {
-        success: true,
+        code: 0,
+        message: '获取成功',
         data: authors
       };
     } catch (error) {
       ctx.status = 500;
       ctx.body = {
-        success: false,
-        message: error.message
+        code: -1,
+        message: error.message,
+        data: null
       };
     }
   }

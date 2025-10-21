@@ -1,4 +1,4 @@
-const { pool } = require('../config/database');
+const { pool } = require("../config/database");
 
 class Poetry {
   constructor(data) {
@@ -7,11 +7,15 @@ class Poetry {
     this.author = data.author;
     this.dynasty = data.dynasty;
     // 将content字符串转换为数组（按换行符分割）
-    this.content = data.content ? data.content.split('\n').filter(line => line.trim()) : [];
+    this.content = data.content
+      ? data.content.split("\n").filter((line) => line.trim())
+      : [];
     this.translation = data.translation;
     this.notes = data.notes;
     // 将tags字符串转换为数组（按逗号分割）
-    this.tags = data.tags ? data.tags.split(',').filter(tag => tag.trim()) : [];
+    this.tags = data.tags
+      ? data.tags.split(",").filter((tag) => tag.trim())
+      : [];
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;
   }
@@ -19,30 +23,33 @@ class Poetry {
   // 创建诗句
   static async create(poetryData) {
     try {
-      const { title, author, dynasty, content, translation, notes, tags } = poetryData;
-      
+      const { title, author, dynasty, content, translation, notes, tags } =
+        poetryData;
+
       // 处理content字段 - 如果是数组则转换为字符串
-      const processedContent = Array.isArray(content) ? content.join('\n') : content;
-      
+      const processedContent = Array.isArray(content)
+        ? content.join("\n")
+        : content;
+
       // 处理tags字段 - 如果是数组则转换为逗号分隔的字符串
-      const processedTags = Array.isArray(tags) ? tags.join(',') : (tags || '');
-      
+      const processedTags = Array.isArray(tags) ? tags.join(",") : tags || "";
+
       // 处理可选字段，确保不是undefined
       const processedTranslation = translation || null;
       const processedNotes = notes || null;
-      
+
       const sql = `
         INSERT INTO poetry (title, author, dynasty, content, translation, notes, tags)
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
       const [result] = await pool.query(sql, [
-        title, 
-        author, 
-        dynasty, 
-        processedContent, 
-        processedTranslation, 
-        processedNotes, 
-        processedTags
+        title,
+        author,
+        dynasty,
+        processedContent,
+        processedTranslation,
+        processedNotes,
+        processedTags,
       ]);
       return result.insertId;
     } catch (error) {
@@ -53,7 +60,7 @@ class Poetry {
   // 根据ID获取诗句
   static async findById(id) {
     try {
-      const sql = 'SELECT * FROM poetry WHERE id = ?';
+      const sql = "SELECT * FROM poetry WHERE id = ?";
       const [rows] = await pool.query(sql, [id]);
       return rows.length > 0 ? new Poetry(rows[0]) : null;
     } catch (error) {
@@ -65,47 +72,51 @@ class Poetry {
   static async findAll(page = 1, limit = 10, filters = {}) {
     try {
       const offset = (page - 1) * limit;
-      
+
       // 如果没有过滤条件，使用简单查询
       if (Object.keys(filters).length === 0) {
-        const sql = `SELECT * FROM poetry ORDER BY created_at DESC LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}`;
-        console.log('简单SQL查询:', sql);
+        const sql = `SELECT * FROM poetry ORDER BY created_at DESC LIMIT ${parseInt(
+          limit
+        )} OFFSET ${parseInt(offset)}`;
+        console.log("简单SQL查询:", sql);
         const [rows] = await pool.query(sql);
-        return rows.map(row => new Poetry(row));
+        return rows.map((row) => new Poetry(row));
       }
 
       // 有过滤条件时使用参数化查询
-      let sql = 'SELECT * FROM poetry WHERE 1=1';
+      let sql = "SELECT * FROM poetry WHERE 1=1";
       const params = [];
 
       // 添加过滤条件
       if (filters.author) {
-        sql += ' AND author LIKE ?';
+        sql += " AND author LIKE ?";
         params.push(`%${filters.author}%`);
       }
       if (filters.dynasty) {
-        sql += ' AND dynasty = ?';
+        sql += " AND dynasty = ?";
         params.push(filters.dynasty);
       }
       if (filters.title) {
-        sql += ' AND title LIKE ?';
+        sql += " AND title LIKE ?";
         params.push(`%${filters.title}%`);
       }
       if (filters.content) {
-        sql += ' AND content LIKE ?';
+        sql += " AND content LIKE ?";
         params.push(`%${filters.content}%`);
       }
 
       // 添加排序和分页 - 使用字符串拼接避免参数问题
-      sql += ` ORDER BY created_at DESC LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}`;
+      sql += ` ORDER BY created_at DESC LIMIT ${parseInt(
+        limit
+      )} OFFSET ${parseInt(offset)}`;
 
-      console.log('复杂SQL查询:', sql);
-      console.log('查询参数:', params);
+      console.log("复杂SQL查询:", sql);
+      console.log("查询参数:", params);
 
       const [rows] = await pool.query(sql, params);
-      return rows.map(row => new Poetry(row));
+      return rows.map((row) => new Poetry(row));
     } catch (error) {
-      console.error('数据库查询错误:', error);
+      console.error("数据库查询错误:", error);
       throw new Error(`获取诗句列表失败: ${error.message}`);
     }
   }
@@ -115,28 +126,28 @@ class Poetry {
     try {
       // 如果没有过滤条件，使用简单查询
       if (Object.keys(filters).length === 0) {
-        const sql = 'SELECT COUNT(*) as total FROM poetry';
+        const sql = "SELECT COUNT(*) as total FROM poetry";
         const [rows] = await pool.query(sql);
         return rows[0].total;
       }
 
-      let sql = 'SELECT COUNT(*) as total FROM poetry WHERE 1=1';
+      let sql = "SELECT COUNT(*) as total FROM poetry WHERE 1=1";
       const params = [];
 
       if (filters.author) {
-        sql += ' AND author LIKE ?';
+        sql += " AND author LIKE ?";
         params.push(`%${filters.author}%`);
       }
       if (filters.dynasty) {
-        sql += ' AND dynasty = ?';
+        sql += " AND dynasty = ?";
         params.push(filters.dynasty);
       }
       if (filters.title) {
-        sql += ' AND title LIKE ?';
+        sql += " AND title LIKE ?";
         params.push(`%${filters.title}%`);
       }
       if (filters.content) {
-        sql += ' AND content LIKE ?';
+        sql += " AND content LIKE ?";
         params.push(`%${filters.content}%`);
       }
 
@@ -153,21 +164,33 @@ class Poetry {
       const fields = [];
       const values = [];
 
-      Object.keys(updateData).forEach(key => {
-        if (updateData[key] !== undefined) {
+      Object.keys(updateData).forEach((key) => {
+        if (updateData[key] !== undefined && key !== "id") {
+          let value = updateData[key];
+
+          // 处理content字段 - 如果是数组则转换为字符串
+          if (key === "content" && Array.isArray(value)) {
+            value = value.join("\n");
+          }
+
+          // 处理tags字段 - 如果是数组则转换为逗号分隔的字符串
+          if (key === "tags" && Array.isArray(value)) {
+            value = value.join(",");
+          }
+
           fields.push(`${key} = ?`);
-          values.push(updateData[key]);
+          values.push(value);
         }
       });
 
       if (fields.length === 0) {
-        throw new Error('没有要更新的字段');
+        throw new Error("没有要更新的字段");
       }
 
       values.push(id);
-      const sql = `UPDATE poetry SET ${fields.join(', ')} WHERE id = ?`;
+      const sql = `UPDATE poetry SET ${fields.join(", ")} WHERE id = ?`;
       const [result] = await pool.query(sql, values);
-      
+
       return result.affectedRows > 0;
     } catch (error) {
       throw new Error(`更新诗句失败: ${error.message}`);
@@ -177,7 +200,7 @@ class Poetry {
   // 删除诗句
   static async delete(id) {
     try {
-      const sql = 'DELETE FROM poetry WHERE id = ?';
+      const sql = "DELETE FROM poetry WHERE id = ?";
       const [result] = await pool.query(sql, [id]);
       return result.affectedRows > 0;
     } catch (error) {
@@ -198,7 +221,7 @@ class Poetry {
       `;
       const searchTerm = `%${keyword}%`;
       const [rows] = await pool.query(sql, [keyword, searchTerm, searchTerm]);
-      return rows.map(row => new Poetry(row));
+      return rows.map((row) => new Poetry(row));
     } catch (error) {
       throw new Error(`搜索诗句失败: ${error.message}`);
     }
@@ -207,9 +230,9 @@ class Poetry {
   // 获取所有朝代
   static async getDynasties() {
     try {
-      const sql = 'SELECT DISTINCT dynasty FROM poetry ORDER BY dynasty';
+      const sql = "SELECT DISTINCT dynasty FROM poetry ORDER BY dynasty";
       const [rows] = await pool.query(sql);
-      return rows.map(row => row.dynasty);
+      return rows.map((row) => row.dynasty);
     } catch (error) {
       throw new Error(`获取朝代列表失败: ${error.message}`);
     }
@@ -218,9 +241,9 @@ class Poetry {
   // 获取所有作者
   static async getAuthors() {
     try {
-      const sql = 'SELECT DISTINCT author FROM poetry ORDER BY author';
+      const sql = "SELECT DISTINCT author FROM poetry ORDER BY author";
       const [rows] = await pool.query(sql);
-      return rows.map(row => row.author);
+      return rows.map((row) => row.author);
     } catch (error) {
       throw new Error(`获取作者列表失败: ${error.message}`);
     }
