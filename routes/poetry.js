@@ -118,7 +118,7 @@ router.post('/', PoetryController.createPoetry);
 
 /**
  * @swagger
- * /api/poetry:
+ * /api/poetry/list:
  *   get:
  *     summary: 获取诗句列表
  *     tags: [Poetry]
@@ -184,7 +184,7 @@ router.post('/', PoetryController.createPoetry);
  *                         pages:
  *                           type: integer
  */
-router.get('/', PoetryController.getPoetryList);
+router.get('/list', PoetryController.getPoetryList);
 
 /**
  * @swagger
@@ -301,8 +301,8 @@ router.get('/getPoetryById', PoetryController.getPoetryById);
 
 /**
  * @swagger
- * /api/poetry:
- *   put:
+ * /api/poetry/updatePoetry:
+ *   post:
  *     summary: 更新诗句
  *     tags: [Poetry]
  *     parameters:
@@ -356,7 +356,7 @@ router.post('/updatePoetry', PoetryController.updatePoetry);
 
 /**
  * @swagger
- * /api/poetry:
+ * /api/poetry/deletePoetry:
  *   post:
  *     summary: 删除诗句
  *     tags: [Poetry]
