@@ -38,9 +38,13 @@ async function testGetPoetryById(id) {
   if (!id) return;
   
   try {
-    console.log(`\n测试获取诗句详情 (ID: ${id})...`);
-    const response = await axios.get(`${BASE_URL}/getPoetryById?id=${id}`);
-    console.log('详情结果:', JSON.stringify(response.data, null, 2));
+    console.log(`\n测试获取诗句详情 - 查询参数方式 (ID: ${id})...`);
+    const response1 = await axios.get(`${BASE_URL}/getPoetryById?id=${id}`);
+    console.log('查询参数方式结果:', JSON.stringify(response1.data, null, 2));
+    
+    console.log(`\n测试获取诗句详情 - RESTful方式 (ID: ${id})...`);
+    const response2 = await axios.get(`${BASE_URL}/${id}`);
+    console.log('RESTful方式结果:', JSON.stringify(response2.data, null, 2));
   } catch (error) {
     console.error('获取详情失败:', error.response?.data || error.message);
   }

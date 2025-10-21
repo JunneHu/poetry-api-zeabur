@@ -43,10 +43,53 @@ class PoetryController {
     }
   }
 
-  // 获取诗句详情
+  // 获取诗句详情（查询参数方式）
   static async getPoetryById(ctx) {
     try {
-      const { id } = ctx.params;
+      const { id } = ctx.query; // 从查询参数获取ID
+      
+      if (!id) {
+        ctx.status = 400;
+        ctx.body = {
+          code: -1,
+          message: 'ID参数不能为空',
+          data: null
+        };
+        return;
+      }
+
+      const poetry = await Poetry.findById(id);
+
+      if (!poetry) {
+        ctx.status = 404;
+        ctx.body = {
+          code: -1,
+          message: '诗句不存在',
+          data: null
+        };
+        return;
+      }
+
+      ctx.body = {
+        code: 0,
+        message: '获取成功',
+        data: poetry
+      };
+    } catch (error) {
+      ctx.status = 500;
+      ctx.body = {
+        code: -1,
+        message: error.message,
+        data: null
+      };
+    }
+  }
+
+  // 获取诗句详情（RESTful路径参数方式）
+  static async getPoetryByIdRestful(ctx) {
+    try {
+      const { id } = ctx.params; // 从路径参数获取ID
+      
       const poetry = await Poetry.findById(id);
 
       if (!poetry) {

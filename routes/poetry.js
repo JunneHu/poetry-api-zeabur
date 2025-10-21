@@ -1,8 +1,8 @@
-const Router = require('koa-router');
-const PoetryController = require('../controllers/poetryController');
+const Router = require("koa-router");
+const PoetryController = require("../controllers/poetryController");
 
 const router = new Router({
-  prefix: '/api/poetry'
+  prefix: "/api/poetry",
 });
 
 /**
@@ -114,7 +114,7 @@ const router = new Router({
  *       500:
  *         description: 服务器错误
  */
-router.post('/', PoetryController.createPoetry);
+router.post("/", PoetryController.createPoetry);
 
 /**
  * @swagger
@@ -184,7 +184,7 @@ router.post('/', PoetryController.createPoetry);
  *                         pages:
  *                           type: integer
  */
-router.get('/list', PoetryController.getPoetryList);
+router.get("/list", PoetryController.getPoetryList);
 
 /**
  * @swagger
@@ -219,7 +219,7 @@ router.get('/list', PoetryController.getPoetryList);
  *       500:
  *         description: 服务器错误
  */
-router.get('/search', PoetryController.searchPoetry);
+router.get("/search", PoetryController.searchPoetry);
 
 /**
  * @swagger
@@ -242,7 +242,7 @@ router.get('/search', PoetryController.searchPoetry);
  *                   items:
  *                     type: string
  */
-router.get('/dynasties', PoetryController.getDynasties);
+router.get("/dynasties", PoetryController.getDynasties);
 
 /**
  * @swagger
@@ -265,7 +265,7 @@ router.get('/dynasties', PoetryController.getDynasties);
  *                   items:
  *                     type: string
  */
-router.get('/authors', PoetryController.getAuthors);
+router.get("/authors", PoetryController.getAuthors);
 
 /**
  * @swagger
@@ -297,7 +297,11 @@ router.get('/authors', PoetryController.getAuthors);
  *       500:
  *         description: 服务器错误
  */
-router.get('/getPoetryById', PoetryController.getPoetryById);
+// 支持查询参数方式：/api/poetry/getPoetryById?id=1
+router.get("/getPoetryById", PoetryController.getPoetryById);
+
+// 支持RESTful路径参数方式：/api/poetry/1
+router.get("/:id", PoetryController.getPoetryByIdRestful);
 
 /**
  * @swagger
@@ -352,7 +356,7 @@ router.get('/getPoetryById', PoetryController.getPoetryById);
  *       500:
  *         description: 服务器错误
  */
-router.post('/updatePoetry', PoetryController.updatePoetry);
+router.post("/updatePoetry", PoetryController.updatePoetry);
 
 /**
  * @swagger
@@ -379,6 +383,6 @@ router.post('/updatePoetry', PoetryController.updatePoetry);
  *       500:
  *         description: 服务器错误
  */
-router.post('/deletePoetry', PoetryController.deletePoetry);
+router.post("/deletePoetry", PoetryController.deletePoetry);
 
 module.exports = router;
